@@ -1,8 +1,8 @@
 package parse
 
 import (
-	"fmt"
 	"go-sm-parser/internal/song"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -77,44 +77,42 @@ func calcQuantization(measure string) int {
 	return len(measure) / 4
 }
 
-// func splitSteps(measure string) []song.Step {
+func calcBeat(measureNumber int, beatPart float64, measureIndex int) float64 {
+	return 4 * (float64(measureNumber) + (beatPart * float64(measureIndex/4)))
+}
 
-// }
+func splitSteps(measure string, measureNumber int, quantization int) []song.Step {
+	steps := []song.Step{}
+	step := song.Step{}
+	beatPart := 1.00 / float64(quantization)
+	for idx, m := range measure {
+		switch remainder := math.Mod(float64(idx+1), 4); remainder {
+		case 1:
+			step.Left = string(m)
+		case 2:
+			step.Down = string(m)
+		case 3:
+			step.Up = string(m)
+		case 0:
+			step.Right = string(m)
+			step.Beat = calcBeat(measureNumber, beatPart, idx)
+			steps = append(steps, step)
+			step = song.Step{}
+		}
+	}
+	return steps
+}
 
 // NoteData captures beat/measure information
 func NoteData(notes string) []song.Measure {
 	measureSlices := []song.Measure{}
 	measures := strings.SplitAfter(notes, ",")
-	for idx, measureString := range measures {
+	for measureNumber, measureString := range measures {
 		measureClean := strings.Replace(strings.Replace(measureString, "\r", "", -1), ",", "", -1)
 		quantization := calcQuantization(measureClean)
-		measure := song.Measure{Index: idx, Quantization: quantization}
+		steps := splitSteps(measureClean, measureNumber, quantization)
+		measure := song.Measure{Index: measureNumber, Quantization: quantization, Steps: steps}
 		measureSlices = append(measureSlices, measure)
-		fmt.Println(measure)
 	}
 	return measureSlices
 }
-
-// func main() {
-// https://kodejava.org/how-to-split-a-string-by-a-number-of-characters/
-// 	index := 0
-// 	measure := "0010000010000000"
-// 	quantization := len(measure) / 4
-// 	beatPart := 0
-// 	step := Step{}
-// 	measures := []Step
-// 	for idx, arrow := range measure {
-// 		if math.Mod(idx, 4) != 0 {
-// 			right, _ := strconv.ParseInt(arrow, 64)
-// 			step.Right = right
-// 			step.Beat = beatPart
-// 			measures = append(measures, step)
-// 			beatPart += 1 / quantization
-// 			step := Step{}
-// 		} else {
-
-// 		}
-// 	}
-
-// 	fmt.Println(quantization)
-// }

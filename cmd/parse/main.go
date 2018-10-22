@@ -2,6 +2,7 @@
 package main
 
 import (
+	"encoding/json"
 	"go-sm-parser/internal/parse"
 	"go-sm-parser/internal/song"
 	"io/ioutil"
@@ -86,14 +87,19 @@ func main() {
 	simfile.Header = header
 
 	// Parse the chart note data
-	notes := parse.NoteValue(simfile.Charts[0].RawData)
-	for _, stepChart := range simfile.Charts {
-		stepChart.Type = notes[1]
-		stepChart.Description = notes[2]
-		stepChart.Difficulty = notes[3]
-		meter, _ := strconv.ParseInt(notes[4], 10, 64)
-		stepChart.Meter = meter
-		stepChart.GrooveRadar = parse.RadarCategory(notes[5])
-		stepChart.Notes = parse.NoteData(notes[6])
+	for idx := range simfile.Charts {
+		notes := parse.NoteValue(simfile.Charts[idx].RawData)
+		simfile.Charts[idx].Type = notes[1]
+		simfile.Charts[idx].Description = notes[2]
+		simfile.Charts[idx].Difficulty = notes[3]
+		meter, _ := strconv.Atoi(notes[4])
+		simfile.Charts[idx].Meter = meter
+		simfile.Charts[idx].GrooveRadar = parse.RadarCategory(notes[5])
+		simfile.Charts[idx].Notes = parse.NoteData(notes[6])
+		simfile.Charts[idx].RawData = ""
 	}
+
+	// Write as JSON
+	simfileJSON, _ := json.Marshal(simfile)
+	err = ioutil.WriteFile("test.json", simfileJSON, 0644)
 }

@@ -37,7 +37,7 @@ type Chart struct {
 	Type        string
 	Description string
 	Difficulty  string
-	Meter       int64
+	Meter       int
 	GrooveRadar Radar
 	Notes       []Measure
 }
@@ -54,10 +54,10 @@ type Radar struct {
 // Step structure
 type Step struct {
 	Beat  float64
-	Left  int
-	Down  int
-	Up    int
-	Right int
+	Left  string
+	Down  string
+	Up    string
+	Right string
 }
 
 // Measure structure
