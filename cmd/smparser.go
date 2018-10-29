@@ -30,6 +30,7 @@ func main() {
 	}
 
 	// Write to disk as JSON.
-	err = parser.WriteJSON(sim)
+	outDir := "../testdata"
+	err = parser.WriteJSON(sim, outDir)
 	parser.CheckError(err)
 }
