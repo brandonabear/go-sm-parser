@@ -9,4 +9,3 @@ install:
   - go get github.com/spf13/afero
 script:
   - go test parser/* -v -covermode=count -coverprofile=coverage.out
-  - $GOPATH/bin/goveralls -service=travis-ci
