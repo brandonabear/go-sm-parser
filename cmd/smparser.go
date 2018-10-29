@@ -3,36 +3,33 @@
 package main
 
 import (
-	"go-sm-parser/parse"
-	"go-sm-parser/read"
-	"go-sm-parser/simfile"
-	"go-sm-parser/write"
+	"go-sm-parser/parser"
 	"os"
 	"strings"
 )
 
 func main() {
 	// Read the simfile data into memory.
-	sim := simfile.Simfile{}
+	sim := parser.Simfile{}
 	smPath := os.Args[1]
-	data, err := read.SM(smPath)
-	parse.CheckError(err)
+	data, err := parser.ReadSM(smPath)
+	parser.CheckError(err)
 
 	// Parse the header tags.
 	tags := strings.Split(string(data), ";")
-	sim.SongPack = parse.PackName(smPath)
+	sim.SongPack = parser.PackName(smPath)
 	for i := range tags {
 		tag := tags[i]
-		sim = parse.ExtractHeader(tag, sim)
+		sim = parser.ExtractHeader(tag, sim)
 	}
 
 	// Parse the notes tag (chart data).
 	for i := range sim.Charts {
-		notes := parse.RawNoteValue(sim.Charts[i].RawData)
-		sim = parse.ExtractCharts(i, notes, sim)
+		notes := parser.RawNoteValue(sim.Charts[i].RawData)
+		sim = parser.ExtractCharts(i, notes, sim)
 	}
 
 	// Write to disk as JSON.
-	err = write.AsJSON(sim)
-	parse.CheckError(err)
+	err = parser.WriteJSON(sim)
+	parser.CheckError(err)
 }
