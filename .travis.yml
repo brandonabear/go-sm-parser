@@ -4,16 +4,9 @@ go:
   - tip
 git:
   depth: 5
-before_install:
-  - go get github.com/mattn/goveralls
 install:
+  - go get github.com/mattn/goveralls
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/spf13/afero
 script:
-  - echo $GOPATH
-  - ls $GOPATH/bin
-  - ls $GOPATH/bin/goveralls
   - go test parser/* -v -covermode=count -coverprofile=profile.cov
-  - ls ./
-  - ls parser/
-  - $GOPATH/bin/goveralls -coverprofile=profile.cov -service=travis-ci
