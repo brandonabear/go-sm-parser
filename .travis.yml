@@ -8,4 +8,5 @@ install:
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/spf13/afero
 script:
-  - go test parser/* -v -covermode=count -coverprofile=coverage.out
+  - go test parser/* -v -covermode=count -coverprofile=profile.cov
+  - goveralls -coverprofile=parser/profile.cov -service=travis-ci
